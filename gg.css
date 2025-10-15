@@ -1,0 +1,5 @@
+html, body { margin: 0; background: #111111; color: #eeeeee; font-family: system-ui, sans-serif; }
+
+#instruct { position: fixed; left: 10px; top: 10px; }
+
+canvas { display: block; margin: 0 auto; image-rendering: pixelated; }
