@@ -6,3 +6,8 @@
 - Added mapObject class object
 - Added Map array for 2nd map
 - Named the maps
+
+# October 16 & 17, 2025
+- Displayed player character
+- streamlined drawSquare()
+- added colors for the player and water
