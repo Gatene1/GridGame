@@ -22,6 +22,7 @@ npm-debug.log*
 *.log
 *.tmp
 *.bak
+/SpruceHandoff
 
 # === Personal files ===
 .env

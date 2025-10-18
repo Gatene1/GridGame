@@ -26,14 +26,20 @@ function drawBoard() {
                 ctx.fillRect(tileStartingX, tileStartingY, TILE_WIDTH - TILE_STROKE_WIDTH, TILE_WIDTH - TILE_STROKE_WIDTH);
                 ctx.strokeStyle = currentMap.colorScheme.wallStrokeColor;
                 ctx.strokeRect(tileStartingX, tileStartingY, TILE_WIDTH, TILE_WIDTH);
-            } else if (currentMap.grid[tileOnY][tileOnX] === 3) {
-                alert ("DRAWING WATER");
-                drawSquare(tileStartingX, tileStartingY, TILE_WIDTH,
+            } else if (currentMap.grid[tileOnY][tileOnX] === 2) {
+                drawSquare(tileStartingX, tileStartingY, TILE_WIDTH - 6,
                     bridgeActive ? currentMap.colorScheme.waterColor1 : currentMap.colorScheme.waterColor2,
                     true, STROKE_COLOR);
+            } else if (currentMap.grid[tileOnY][tileOnX] === 3) {
+                drawSquare(tileStartingX + 4, tileStartingY + 6, TILE_WIDTH - 14,
+                    currentMap.colorScheme.exitColor1, true, STROKE_COLOR);
+                drawSquare(tileStartingX + 16, tileStartingY + 18, TILE_WIDTH - 38,
+                    currentMap.colorScheme.exitColor2, true, STROKE_COLOR);
             }
         }
     }
-    drawSquare(player.playerX * TILE_WIDTH + 12, player.playerY * TILE_WIDTH + 12, TILE_WIDTH - 24, player.colorRep, false);
+    drawSquare(player.x * TILE_WIDTH + 12, player.y * TILE_WIDTH + 12, TILE_WIDTH - 24, player.color, false);
+    drawSquare(toy.x * TILE_WIDTH + 12, toy.y * TILE_WIDTH + 12, TILE_WIDTH - 24, toy.state=="Dormant" ? toy.color : toy.color2, false);
+    drawSquare(lever.x * TILE_WIDTH + 12, lever.y * TILE_WIDTH + 12, TILE_WIDTH - 24, lever.color, false);
 
 }
