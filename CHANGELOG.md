@@ -16,3 +16,7 @@
 - Reorganized file tree for legibility and conformity to standards
 - Added SpruceHandoff folder to hold a set of files that act as reminders for AI to help with any issues that arise.
 - Finished adding all sprites to the play area.
+
+# October 18, 2025
+- Added rudimentary instructions for gameplay
+- Added more to the scaffolding for common gameplay functions.

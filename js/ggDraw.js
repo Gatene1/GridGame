@@ -43,3 +43,9 @@ function drawBoard() {
     drawSquare(lever.x * TILE_WIDTH + 12, lever.y * TILE_WIDTH + 12, TILE_WIDTH - 24, lever.color, false);
 
 }
+
+function drawText(bold = false, italics = false, size, font, color, what, x, y) {
+    ctx.fillStyle = color;
+    ctx.font = italics ? "italic " : "" + size + " " + font;
+    ctx.fillText(what, x, y);
+}
