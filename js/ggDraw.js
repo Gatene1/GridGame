@@ -8,6 +8,8 @@ function drawSquare(x, y, d, color, stroke, strokeColor = '#333333') {
 }
 
 function drawBoard() {
+    ctx.clearRect(0, 0, gameBoard.width, gameBoard.height);
+
     let tileOnY, tileOnX;
     let tileStartingX = 0;
     let tileStartingY = 0;
@@ -38,14 +40,31 @@ function drawBoard() {
             }
         }
     }
-    drawSquare(player.x * TILE_WIDTH + 12, player.y * TILE_WIDTH + 12, TILE_WIDTH - 24, player.color, false);
-    drawSquare(toy.x * TILE_WIDTH + 12, toy.y * TILE_WIDTH + 12, TILE_WIDTH - 24, toy.state=="Dormant" ? toy.color : toy.color2, false);
+    drawSquare(toy.x * TILE_WIDTH + 12, toy.y * TILE_WIDTH + 12, TILE_WIDTH - 24, toy.state===ToyState.DORMANT ? toy.color : toy.color2, false);
     drawSquare(lever.x * TILE_WIDTH + 12, lever.y * TILE_WIDTH + 12, TILE_WIDTH - 24, lever.color, false);
-
+    drawSquare(player.x * TILE_WIDTH + 12, player.y * TILE_WIDTH + 12, TILE_WIDTH - 24, player.color, false);
 }
 
-function drawText(bold = false, italics = false, size, font, color, what, x, y) {
+function drawText(bold = false, italics = false, size, font, color, what, x, y, shadow = false) {
+    let embolden = bold ? "bold " : "", italicize = italics ? "italic " : "", emboss = shadow ? "#0008" : "transparent";
     ctx.fillStyle = color;
-    ctx.font = italics ? "italic " : "" + size + " " + font;
+    ctx.font = embolden + italicize + size.toString() + " " + font.toString();
+    ctx.shadowColor = emboss;
+    ctx.shadowOffsetX = 2;
+    ctx.shadowOffsetY = 2;
+    ctx.shadowBlur = 2;
     ctx.fillText(what, x, y);
+    ctx.shadowColor = "transparent";
+}
+
+function drawBar(x, y, w, h, val, color, label) {
+    drawText(true, true, "15px", "system-ui", '#40c8c8', label, x, y - 10, true);
+    ctx.fillStyle = "#333"; ctx.fillRect(x, y, w, h);
+    ctx.fillStyle = color; ctx.fillRect(x, y, Math.max(0, Math.min(1, val)) * w, h);
+    ctx.strokeStyle = '#000', ctx.strokeRect(x + 0.5, y + 0.5, w - 1, h - 1);
+}
+
+function drawAllBars() {
+    drawBar(10, gameBoard.height - 18, 200, 8, breath/maxBreath, '#8bc34a', 'Breath');
+    drawBar(220, gameBoard.height - 18, 100, 8, Math.max(0, breathReleaseCooldown / 0.6), '#ff9800', 'Cooldown');
 }

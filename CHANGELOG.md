@@ -17,6 +17,15 @@
 - Added SpruceHandoff folder to hold a set of files that act as reminders for AI to help with any issues that arise.
 - Finished adding all sprites to the play area.
 
-# October 18, 2025
+# October 19, 2025
 - Added rudimentary instructions for gameplay
 - Added more to the scaffolding for common gameplay functions.
+
+# October 20, 2025
+- Set up DeltaTime
+- Added movement for the player character
+- Added logic to test next tile was traversable before moving player character.
+
+# October 21, 2025
+- Added Breadth First Search (BFS) function to find the shortest path to the lever.
+- Added movement for the toy player character to get to the lever.

@@ -37,11 +37,17 @@ class Player extends Entity {
     }
 }
 
+const ToyState = Object.freeze({
+    DORMANT: 0,
+    AWAKE: 1,
+    DOING_TASK: 2
+});
+
 class Toy extends Entity {
     constructor (props) {
         super(props);
-        this.color2 = "66d9ef";
-        this.state = "Dormant";
+        this.color2 = '#66d9ef'
+        this.state = ToyState.DORMANT;
     }
 }
 
