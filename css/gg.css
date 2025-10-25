@@ -1,5 +1,54 @@
 html, body { margin: 0; background: #111111; color: #eeeeee; font-family: system-ui, sans-serif; }
 
-#instruct { position: fixed; left: 10px; top: 10px; }
+/*#instruct { position: fixed; left: 10px; top: 10px; }*/
 
-canvas { display: block; margin: 0 auto; image-rendering: pixelated; }
+/*canvas { display: block; margin: 0 auto; image-rendering: pixelated; }*/
+
+#container {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+
+    width: 100%;
+    /*max-width: 1200px;*/
+    margin: 0 auto;
+}
+
+#instruct {
+    width: 25%;
+    text-align: left;
+}
+
+#caps {
+    width: 55%;
+    margin: 0;
+}
+
+.legend {
+    margin-top: 10px;
+    padding-top: 6px;
+    border-top: 1px solid #444;
+    font-family: system-ui, sans-serif;
+    font-size: 14px;
+    color: #ddd;
+}
+
+.legend-row {
+    display: flex;
+    align-items: center;
+    margin: 4px 0;
+}
+
+.legend-row .icon {
+    width: 20px;
+    height: 20px;
+    margin-right: 6px;
+    border: 1px solid #222;
+}
+
+/* Color match the actual game objects */
+.icon.player { background-color: #ff6b6b; }   /* red = player */
+.icon.toy    { background-color: #aaaaaa; }   /* gray = toy */
+.icon.lever  { background-color: #6bb9c7; }   /* cyan = lever */
+.icon.exit   { background-color: #ffd54a; }   /* gold = exit */

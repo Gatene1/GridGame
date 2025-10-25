@@ -16,7 +16,7 @@ function blackout() {
     toy.state = ToyState.DORMANT;
     bridgeActive = false;
     breath = maxBreath;
-    breathReleaseCooldown = 0.6; // Prevent immediate rehold.
+    breathReleaseCooldown = breathReleaseCooldownBase; // Prevent immediate rehold.
 }
 
 function handlePlayer(deltaTime) {
@@ -26,9 +26,9 @@ function handlePlayer(deltaTime) {
     holdingB = nowHoldingB;
 
     if (holdingB && breath > 0 && breathReleaseCooldown <= 0) {
-        drawText(true, false, "50px", 'Arial', '#ffff00', 'B', 200, 200);
+        //drawText(true, false, "50px", 'Arial', '#ffff00', 'B', 200, 200);
         bHoldTime += deltaTime;
-        breath -= 30 * deltaTime;
+        breath -= breathDrainRate * deltaTime;
         if (bJustPressed) {
             const toyPos = {x: toy.posX, y: toy.posY};
             const leverPos = {x: lever.posX, y: lever.posY};
@@ -52,10 +52,10 @@ function handlePlayer(deltaTime) {
 
         // If just let go of 'B', start breathReleaseCooldown.
         if (!holdingB && prevHoldingB) {
-            breathReleaseCooldown = 0.6;
-            breath = Math.min(maxBreath, breath + 20 * deltaTime);
+            if (breathReleaseCooldown <= 0) breathReleaseCooldown = breathReleaseCooldownBase;
+            breath = Math.min(maxBreath, breath + breathRegenRate * deltaTime);
         } else if (!holdingB) {
-            breath = Math.min(maxBreath, breath + 20 * deltaTime);
+            breath = Math.min(maxBreath, breath + breathRegenRate * deltaTime);
             if (breathReleaseCooldown > 0) breathReleaseCooldown -= deltaTime;
         }
         // If 'B' isn't held, the toy ragdolls.
@@ -80,6 +80,12 @@ function handlePlayer(deltaTime) {
             player.posX += dx;
             player.posY += dy;
             moveCooldown = 0.17;
+
+            // NEW: step-on-exit → advance level
+            if (isExit(player.posX, player.posY)) {
+                goToNextMap();
+                return; // stop processing this frame
+            }
         }
     }
     // Moved this line down here so I can rin the line of code that governs when player just lets go of 'B'.
@@ -87,6 +93,12 @@ function handlePlayer(deltaTime) {
 }
 
 function updateToy(deltaTime) {
+    // TICK POPUP TIMER FIRST — always runs
+    if (clickMsgTimer > 0) {
+        clickMsgTimer -= deltaTime;
+        if (clickMsgTimer < 0) clickMsgTimer = 0;
+    }
+
     if (holdingB && breath > 0 && breathReleaseCooldown <= 0) {
         if (toy.state === ToyState.DORMANT) {
             toy.state = ToyState.AWAKE;
@@ -96,6 +108,10 @@ function updateToy(deltaTime) {
     if (!holdingB) {
         if (toy.state !== ToyState.DORMANT) {
             toy.state = ToyState.DORMANT;
+        }
+        if (bridgeActive) {
+            deactivateBridge();
+            if (!isWalkable(player.posX, player.posY)) blackout();
         }
         return;
     }
@@ -127,13 +143,19 @@ function updateToy(deltaTime) {
     }
 
     // At lever? Perform the task once.
-    if (toy.posX === lever.posX && toy.posY === lever.posY && !bridgeActive) {
+    if (toy.posX === lever.posX && toy.posY === lever.posY && !bridgeActive && breathReleaseCooldown <= 0) {
         toy.state = ToyState.DOING_TASK;
 
-        activateBridge();
+        activateBridge()
 
-        toyPath = 0;
+        // bridgeActive just toggled
+        clickMsgTimer = 1.0; // show popup for 2 seconds
+        clickMsgColorIndex = (clickMsgColorIndex + 1) % CLICK_MSG_COLORS.length;
+
+
+        toyPath = [];
         toyPathIndex = 0;
         toy.state = ToyState.DORMANT;
     }
+
 }

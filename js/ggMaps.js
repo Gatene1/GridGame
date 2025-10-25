@@ -21,3 +21,14 @@ const MAP1 = [
 ];
 
 
+// 0=floor, 1=wall, 2=water (opens on lever), 3=exit, 4=toy spawn, 5=toy patrol path
+const MAP2 = [
+    [ 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 ],
+    [ 1, 0, 0, 0, 1, 0, 0, 0, 2, 1 ], // switch at (3,1) opens the water column at x=8
+    [ 1, 0, 1, 0, 1, 0, 1, 0, 2, 1 ],
+    [ 1, 0, 1, 4, 4, 4, 1, 0, 2, 1 ], // patrol strip (y=3, x=3..5)
+    [ 1, 0, 1, 4, 4, 4, 1, 0, 2, 1 ], // toy spawn at (3,4), connects to patrol at (4,4),(5,4)
+    [ 1, 0, 0, 0, 1, 0, 0, 0, 2, 1 ],
+    [ 1, 0, 1, 1, 1, 0, 1, 1, 3, 1 ], // exit at (8,6)
+    [ 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 ],
+];

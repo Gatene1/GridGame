@@ -1,3 +1,6 @@
+# Toy Path v0.1.0
+<hr>
+
 # October 14, 2025
 - Erased and recreated the repository to reflect my new code, beginning from scratch.
 - Began scaffolding with the HTML, CSS, Default JS file, and the Maps JS file.
@@ -29,3 +32,15 @@
 # October 21, 2025
 - Added Breadth First Search (BFS) function to find the shortest path to the lever.
 - Added movement for the toy player character to get to the lever.
+
+# October 22 & 23 & 24, 2025
+- Completed the todo list
+- Add fade transition between levels
+- Balance breath drain/regeneration values
+- Lower 'click' message time to 1 second
+- Change 'click' message time to '*Click*' so it looks like an action vs a command to the player.
+- Add shrinking and growing for inner square for the exits when the lever is flipped
+- Add name of the level above the play area, maybe in its own canvas position just above the gameboard canvas
+- Add more detailed instructions to the left of the gameboard canvas
+- Began adding a Patrol Toy character that is introduced in the 3rd level.
+- Began making Instruction manual and Box art for a game box.

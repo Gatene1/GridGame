@@ -48,7 +48,7 @@ function reconstructPath(parent, start, goal) {
         path.push(p);
     }
     path.reverse(); // Now start -> goal.
-    printPath(path);
+    //printPath(path); // This will print the path in the instructions div.
     return path;
 }
 
@@ -75,3 +75,76 @@ function bfs(start, goal) {
 function activateBridge() {
     bridgeActive = true;
 }
+function deactivateBridge() {
+    bridgeActive = false;
+}
+
+// --- Level / scene helpers ---
+
+function isExit(x, y) {
+    // Primary: tile-based exit
+    const t = currentMap.grid[y][x];
+    if (typeof EXIT_TILE !== 'undefined' && t === EXIT_TILE) return true;
+
+    // Fallback: coordinate-based exit if you ever add it to the map object
+    if (currentMap.exitXY && x === currentMap.exitXY.x && y === currentMap.exitXY.y) return true;
+
+    return false;
+}
+function breathModeSelect() {
+    switch (breathMode) {
+        case BreathMode.SURVIVAL:
+            breathDrainRate = 40;
+            breathRegenRate = 20;
+            breathReleaseCooldownBase = 0.6;
+            break;
+        case BreathMode.BALANCED:
+            breathDrainRate = 30;
+            breathRegenRate = 27;
+            breathReleaseCooldownBase = 0.5;
+            break;
+        case BreathMode.RELAXED:
+            breathDrainRate = 25;
+            breathRegenRate = 35;
+            breathReleaseCooldownBase = 0.4;
+            break;
+    }
+}
+
+function loadMap(i) {
+    currentMapIndex = i;
+    currentMap = mapArray[i];
+    breathMode = currentMap.mode;
+
+    // Reset placements from map object
+    player.posX = currentMap.playerXY.x; player.posY = currentMap.playerXY.y;
+    toy.posX    = currentMap.toyXY.x;    toy.posY    = currentMap.toyXY.y;
+    lever.posX  = currentMap.switchXY.x; lever.posY  = currentMap.switchXY.y;
+
+    // Reset run-state
+    toyPath = []; toyPathIndex = 0; toyCooldown = 0;
+    toy.state = ToyState.DORMANT;
+
+    bridgeActive = false;
+
+    // Breath / input cooldowns
+    holdingB = false; prevHoldingB = false; bJustPressed = false; bHoldTime = 0;
+    breath = maxBreath; breathReleaseCooldown = 0;
+    moveCooldown = 0;
+
+    // Avoid accidental auto-move on spawn if an arrow key is held
+    if (typeof keys?.clear === 'function') keys.clear();
+    breathModeSelect();
+}
+
+function goToNextMap() {
+    const next = currentMapIndex + 1;
+    if (next < mapArray.length) {
+        fadeNextIndex = next;
+        fadeDir = 1;        // start fade-out; load happens at peak black
+    } else {
+        // end-of-demo behavior (optional): fade out and reload 0
+        // fadeNextIndex = 0; fadeDir = 1;
+    }
+}
+

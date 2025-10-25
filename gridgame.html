@@ -6,8 +6,34 @@
         <title>Grid-Based Gaming</title>
     </head>
     <body>
-        <div id="instruct">Arrows: move • B: hold breath (wake toy) • Reach the EXIT</div>
-        <div id="caps"><canvas id="gameBoard" width="640" height="512"></canvas></div>
+        <div id="container">
+            <div id="instruct">
+                Arrows: move • B: hold breath (wake toy) • Reach the EXIT
+                <p class="desc">
+                    Reach the exit by holding your breath with <b>'B'</b><br>which activates a toy
+                    to press the switch<br>to let you cross the water to the exit.<br>
+                    Be careful and watch your <b>'Breath'</b> and <b>'Cooldown'</b> meters.<br>
+                    If you run out of breath, you’ll <b>black out</b> and restart the level.
+                </p>
+
+                <div class="legend">
+                    <div class="legend-row">
+                        <div class="icon player"></div> <span>= You</span>
+                    </div>
+                    <div class="legend-row">
+                        <div class="icon toy"></div> <span>= The Toy</span>
+                    </div>
+                    <div class="legend-row">
+                        <div class="icon lever"></div> <span>= The Lever / Switch</span>
+                    </div>
+                    <div class="legend-row">
+                        <div class="icon exit"></div> <span>= The Exit</span>
+                    </div>
+                </div>
+
+            </div>
+            <div id="caps"><canvas id="gameBoard" width="640" height="512"></canvas></div>
+        </div>
         <script language="JavaScript" src="js/ggMaps.js"></script>
         <script language="JavaScript" src="js/ggObject.js"></script>
         <script language="JavaScript" src="js/ggDraw.js"></script>

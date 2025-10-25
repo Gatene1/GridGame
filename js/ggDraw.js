@@ -3,7 +3,8 @@ function drawSquare(x, y, d, color, stroke, strokeColor = '#333333') {
     ctx.fillRect(x, y, d, d);
     if (stroke) {
         ctx.strokeStyle = strokeColor;
-        ctx.strokeRect(x * TILE_WIDTH, y * TILE_WIDTH, d, d);
+        -    ctx.strokeRect(x * TILE_WIDTH, y * TILE_WIDTH, d, d);
+        +    ctx.strokeRect(x, y, d, d);
     }
 }
 
@@ -33,16 +34,78 @@ function drawBoard() {
                     bridgeActive ? currentMap.colorScheme.waterColor1 : currentMap.colorScheme.waterColor2,
                     true, STROKE_COLOR);
             } else if (currentMap.grid[tileOnY][tileOnX] === 3) {
-                drawSquare(tileStartingX + 4, tileStartingY + 6, TILE_WIDTH - 14,
-                    currentMap.colorScheme.exitColor1, true, STROKE_COLOR);
-                drawSquare(tileStartingX + 16, tileStartingY + 18, TILE_WIDTH - 38,
-                    currentMap.colorScheme.exitColor2, true, STROKE_COLOR);
+                // Outer (parent) square
+                const outerX = tileStartingX + 4;
+                const outerY = tileStartingY + 6;
+                const outerD = TILE_WIDTH - 14;
+                drawSquare(outerX, outerY, outerD, currentMap.colorScheme.exitColor1, true, STROKE_COLOR);
+
+                // Inner: pulse only while toy stands on lever; else draw static inner
+                if (toy.x === lever.x && toy.y === lever.y) {
+                    const baseInner = TILE_WIDTH - 38;
+                    const s = 0.55 + 0.35 * Math.sin(gameTime * 6.0); // 0.20..0.90
+                    const w = baseInner * s;
+
+                    // center within the *outer* rect
+                    const x = outerX + (outerD - w) / 2;
+                    const y = outerY + (outerD - w) / 2;
+
+                    drawSquare(x, y, w, currentMap.colorScheme.exitColor2, false);
+                } else {
+                    drawSquare(tileStartingX + 16, tileStartingY + 18, TILE_WIDTH - 38,
+                        currentMap.colorScheme.exitColor2, true, STROKE_COLOR);
+                }
             }
         }
     }
+
+    // Level name header
+    {
+        const prevAlign = ctx.textAlign, prevBase = ctx.textBaseline;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'top';
+        drawText(
+            true, false, "24px", "system-ui", "#dfdfdf",
+            "Level " + (currentMapIndex + 1) + ":  " + currentMap.mapName,
+            gameBoard.width / 2, 4, true
+        );
+        ctx.textAlign = prevAlign; ctx.textBaseline = prevBase;
+    }
+
+
     drawSquare(toy.x * TILE_WIDTH + 12, toy.y * TILE_WIDTH + 12, TILE_WIDTH - 24, toy.state===ToyState.DORMANT ? toy.color : toy.color2, false);
     drawSquare(lever.x * TILE_WIDTH + 12, lever.y * TILE_WIDTH + 12, TILE_WIDTH - 24, lever.color, false);
     drawSquare(player.x * TILE_WIDTH + 12, player.y * TILE_WIDTH + 12, TILE_WIDTH - 24, player.color, false);
+
+    // --- Lever "Click" popup ---
+    if (clickMsgTimer > 0) {
+        const color = CLICK_MSG_COLORS[clickMsgColorIndex];
+
+        // Centered above toy and lever (small offset up)
+        const toyCenterX   = toy.x   * TILE_WIDTH + (TILE_WIDTH / 2);
+        const toyCenterY   = toy.y   * TILE_WIDTH - 6;
+        const leverCenterX = lever.x * TILE_WIDTH + (TILE_WIDTH / 2);
+        const leverCenterY = lever.y * TILE_WIDTH - 6;
+
+        // Temporarily center text without changing your drawText signature
+        const prevAlign = ctx.textAlign;
+        ctx.textAlign = 'center';
+
+        drawText(true, false, "18px", "system-ui", color, CLICK_MSG_TEXT, toyCenterX,   toyCenterY,   true);
+        drawText(true, false, "18px", "system-ui", color, CLICK_MSG_TEXT, leverCenterX, leverCenterY, true);
+
+        ctx.textAlign = prevAlign;
+    }
+
+    // Fade overlay
+    if (fade > 0) {
+        ctx.fillStyle = `rgba(0,0,0,${fade})`;
+        ctx.fillRect(0, 0, gameBoard.width, gameBoard.height);
+    }
+
+
+
+
 }
 
 function drawText(bold = false, italics = false, size, font, color, what, x, y, shadow = false) {
@@ -66,5 +129,5 @@ function drawBar(x, y, w, h, val, color, label) {
 
 function drawAllBars() {
     drawBar(10, gameBoard.height - 18, 200, 8, breath/maxBreath, '#8bc34a', 'Breath');
-    drawBar(220, gameBoard.height - 18, 100, 8, Math.max(0, breathReleaseCooldown / 0.6), '#ff9800', 'Cooldown');
+    drawBar(220, gameBoard.height - 18, 100, 8, Math.max(0, breathReleaseCooldown / breathReleaseCooldownBase), '#ff9800', 'Cooldown');
 }
