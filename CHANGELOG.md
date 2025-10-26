@@ -44,3 +44,10 @@
 - Add more detailed instructions to the left of the gameboard canvas
 - Began adding a Patrol Toy character that is introduced in the 3rd level.
 - Began making Instruction manual and Box art for a game box.
+
+# October 25, 2025
+- Completed the code that defines and runs the Patrol Toy, allowing it to run a path.
+- Added code that will reset the level if you run into the Patrol Toy.
+- Added the code to test for the Manhattan Distance of the starting and ending tile for the Patrol Toy. If it is 1, then the path loops continuously; if not, the path just reverses.
+- Added the other 8 levels to the game, mapping them to the Difficulty Saw.
+- Corrected some errors with NPCs on the map arrays.

@@ -77,6 +77,12 @@ function drawBoard() {
     drawSquare(lever.x * TILE_WIDTH + 12, lever.y * TILE_WIDTH + 12, TILE_WIDTH - 24, lever.color, false);
     drawSquare(player.x * TILE_WIDTH + 12, player.y * TILE_WIDTH + 12, TILE_WIDTH - 24, player.color, false);
 
+    if (patrolToy) {
+        drawSquare( patrolToy.x * TILE_WIDTH + 12, patrolToy.y * TILE_WIDTH + 12,
+            TILE_WIDTH - 24, patrolToy.color2, false );
+    }
+
+
     // --- Lever "Click" popup ---
     if (clickMsgTimer > 0) {
         const color = CLICK_MSG_COLORS[clickMsgColorIndex];
@@ -130,4 +136,28 @@ function drawBar(x, y, w, h, val, color, label) {
 function drawAllBars() {
     drawBar(10, gameBoard.height - 18, 200, 8, breath/maxBreath, '#8bc34a', 'Breath');
     drawBar(220, gameBoard.height - 18, 100, 8, Math.max(0, breathReleaseCooldown / breathReleaseCooldownBase), '#ff9800', 'Cooldown');
+}
+
+function drawEverything(reasonText = "") {
+    // ... your normal board, toys, player, etc.
+
+    if (gamePhase === GamePhase.GAMEOVER) {
+        ctx.fillStyle = "rgba(0,0,0,0.5)";
+        ctx.fillRect(0, 0, gameBoard.width, gameBoard.height);
+
+        ctx.fillStyle = "#fff";
+        ctx.font = "bold 32px sans-serif";
+        const title = "GAME OVER";
+        const tw = ctx.measureText(title).width;
+        ctx.fillText(title, (gameBoard.width - tw)/2, gameBoard.height*0.4);
+
+        ctx.font = "20px sans-serif";
+        const sub = reasonText || " ";
+        const sw = ctx.measureText(sub).width;
+        ctx.fillText(sub, (gameBoard.width - sw)/2, gameBoard.height*0.4 + 36);
+
+        const hint = "Press Space/Enter to retry";
+        const hw = ctx.measureText(hint).width;
+        ctx.fillText(hint, (gameBoard.width - hw)/2, gameBoard.height*0.4 + 72);
+    }
 }

@@ -116,26 +116,35 @@ function loadMap(i) {
     currentMap = mapArray[i];
     breathMode = currentMap.mode;
 
-    // Reset placements from map object
+    // Reset main entities
     player.posX = currentMap.playerXY.x; player.posY = currentMap.playerXY.y;
     toy.posX    = currentMap.toyXY.x;    toy.posY    = currentMap.toyXY.y;
     lever.posX  = currentMap.switchXY.x; lever.posY  = currentMap.switchXY.y;
 
+    // (NEW) Spawn / clear patrol toy per map
+    patrolToy = null;
+    if (currentMap.patrolXY && currentMap.patrolPath && currentMap.patrolPath.length) {
+        patrolToy = new PatrolToy({
+            posX: currentMap.patrolXY.x,
+            posY: currentMap.patrolXY.y,
+            color: '#777',
+            path: currentMap.patrolPath
+        });
+    }
+
     // Reset run-state
     toyPath = []; toyPathIndex = 0; toyCooldown = 0;
     toy.state = ToyState.DORMANT;
-
     bridgeActive = false;
 
-    // Breath / input cooldowns
     holdingB = false; prevHoldingB = false; bJustPressed = false; bHoldTime = 0;
     breath = maxBreath; breathReleaseCooldown = 0;
     moveCooldown = 0;
 
-    // Avoid accidental auto-move on spawn if an arrow key is held
     if (typeof keys?.clear === 'function') keys.clear();
     breathModeSelect();
 }
+
 
 function goToNextMap() {
     const next = currentMapIndex + 1;
@@ -144,7 +153,32 @@ function goToNextMap() {
         fadeDir = 1;        // start fade-out; load happens at peak black
     } else {
         // end-of-demo behavior (optional): fade out and reload 0
-        // fadeNextIndex = 0; fadeDir = 1;
+        //fadeNextIndex = 0; fadeDir = 1;
+        //fade = 1;
+        //gamePhase = GamePhase.GAMEOVER;
     }
 }
 
+function gameOver() {
+    if (fade > 0) {
+        ctx.fillStyle = `rgba(199,199,199,${fade})`;
+        ctx.fillRect(0, 0, gameBoard.width, gameBoard.height);
+    }
+    drawText(true, false, "60px", "Arial", '#0e0e0e', "Thank You For", 100, 200);
+    drawText(true,false,"60px", "Arial", '#0e0e0e', "Playing", 210, 260);
+
+}
+
+function mdist(a, b) { return Math.abs(a.x - b.x) + Math.abs(a.y - b.y); }
+
+function triggerGameOver(reason = "GAME OVER") {
+    gamePhase = GamePhase.GAMEOVER;
+    gameOverReason = reason;
+    gameOverCooldown = 0.6; // brief pause before retry input
+}
+
+function resetLevel() {
+    loadMap(currentMapIndex);
+    gamePhase = GamePhase.PLAYING;
+    gameOverReason = "";
+}

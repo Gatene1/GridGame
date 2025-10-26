@@ -146,7 +146,7 @@ function updateToy(deltaTime) {
     if (toy.posX === lever.posX && toy.posY === lever.posY && !bridgeActive && breathReleaseCooldown <= 0) {
         toy.state = ToyState.DOING_TASK;
 
-        activateBridge()
+        activateBridge();
 
         // bridgeActive just toggled
         clickMsgTimer = 1.0; // show popup for 2 seconds

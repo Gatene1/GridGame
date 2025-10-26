@@ -50,5 +50,6 @@ html, body { margin: 0; background: #111111; color: #eeeeee; font-family: system
 /* Color match the actual game objects */
 .icon.player { background-color: #ff6b6b; }   /* red = player */
 .icon.toy    { background-color: #aaaaaa; }   /* gray = toy */
+.icon.envy   { background-color: #4B6F52; }   /* green-gray = toy */
 .icon.lever  { background-color: #6bb9c7; }   /* cyan = lever */
 .icon.exit   { background-color: #ffd54a; }   /* gold = exit */

@@ -57,69 +57,93 @@ class Toy extends Entity {
 class PatrolToy extends Toy {
     constructor (props) {
         super(props);
-        this.color2 = '#00c900'
+        this.color2 = '#4B6F52  ' // original is 00c900.
         this.state = ToyState.AWAKE;
         this.path = props.path || [];
         this.pathIndex = 0;
         this.direction = 1;
+
+        if (this.path && this.path.length) {
+            let best = 0, dmin = Infinity;
+            for (let i = 0; i < this.path.length; i++) {
+                const dx = this.posX - this.path[i].x, dy = this.posY - this.path[i].y;
+                const d = dx*dx + dy*dy;
+                if (d < dmin) { dmin = d; best = i; }
+            }
+            this.pathIndex = best;
+            this.posX = this.path[best].x; this.posY = this.path[best].y;
+        }
     }
 
     // Grid-step version (1 tile per "tick")
-    updateStep() {
-        if (!this.path || this.path.length === 0) return;
+    updateStep(dt) {
+        if (!this.path.length) return;
+        this._stepTimer -= dt;
+        if (this._stepTimer > 0) return;
+        this._stepTimer = this._stepInterval;
 
-        this.pathIndex += this.direction;
+        const last = this.path.length - 1;
+        let next = this.pathIndex + this.direction;
 
-        // bounce at ends
-        if (this.pathIndex >= this.path.length) {
-            this.pathIndex = this.path.length - 2;
-            this.direction = -1;
-        } else if (this.pathIndex < 0) {
-            this.pathIndex = 1;
-            this.direction = 1;
+        if (next > last) {
+            // at end going forward: loop if ends touch, else bounce
+            if (mdist(this.path[0], this.path[last]) === 1) {
+                next = 0;           // wrap to start
+                this.direction = 1; // keep going forward
+            } else {
+                next = last - 1;    // bounce one back
+                this.direction = -1;
+            }
+        } else if (next < 0) {
+            // at start going backward: loop if ends touch, else bounce
+            if (mdist(this.path[0], this.path[last]) === 1) {
+                next = last;        // wrap to end
+                this.direction = 1; // normalize forward direction
+            } else {
+                next = 1;           // bounce one forward
+                this.direction = 1;
+            }
         }
 
-        const next = this.path[this.pathIndex];
-        this.posX  = next.x;
-        this.posY  = next.y;
+        this.pathIndex = next;
+        const n = this.path[this.pathIndex];
+        this.posX = n.x; this.posY = n.y;
     }
 
     // Smooth follow (moves toward the next node at a set speed, using dt)
     followPath(dt, speedTilesPerSec = 3) {
-        if (!this.path || this.path.length === 0) return;
+        if (!this.path.length) return;
 
-        const targetIdx = this.pathIndex + this.direction;
-        // handle end bounces like updateStep
-        let idx = targetIdx;
-        if (idx >= this.path.length) { idx = this.path.length - 2; this.direction = -1; }
-        else if (idx < 0)           { idx = 1;                     this.direction =  1; }
+        const last = this.path.length - 1;
+        let nextIdx = this.pathIndex + this.direction;
 
-        const target = this.path[idx];
-        if (!target) return;
-
-        const dx = target.x - this.posX;
-        const dy = target.y - this.posY;
-
-        // If we’re basically on the node, snap and advance index
-        const eps = 0.001;
-        if (Math.abs(dx) < eps && Math.abs(dy) < eps) {
-            this.pathIndex = idx; // we reached it; next frame will pick the next node
-            return;
+        if (nextIdx > last) {
+            if (mdist(this.path[0], this.path[last]) === 1) {
+                nextIdx = 0;        // wrap
+                this.direction = 1;
+            } else {
+                nextIdx = last - 1; // bounce
+                this.direction = -1;
+            }
+        } else if (nextIdx < 0) {
+            if (mdist(this.path[0], this.path[last]) === 1) {
+                nextIdx = last;     // wrap
+                this.direction = 1;
+            } else {
+                nextIdx = 1;        // bounce
+                this.direction = 1;
+            }
         }
 
-        // Move toward target at constant speed (tiles/sec)
-        const dist = Math.hypot(dx, dy);
-        const maxStep = speedTilesPerSec * dt;
-        if (dist <= maxStep) {
-            // arrive this frame
-            this.posX = target.x;
-            this.posY = target.y;
-            this.pathIndex = idx;
+        const t = this.path[nextIdx];
+        const dx = t.x - this.posX, dy = t.y - this.posY;
+        const dist = Math.hypot(dx, dy), step = speedTilesPerSec * dt;
+
+        if (dist <= step) {
+            this.posX = t.x; this.posY = t.y; this.pathIndex = nextIdx;
         } else {
-            // move fractionally toward target
-            const nx = dx / dist, ny = dy / dist;
-            this.posX += nx * maxStep;
-            this.posY += ny * maxStep;
+            this.posX += (dx / dist) * step;
+            this.posY += (dy / dist) * step;
         }
     }
 }
@@ -135,4 +159,10 @@ const BreathMode = Object.freeze({
     SURVIVAL: 0,
     BALANCED: 1,
     RELAXED: 2
+});
+
+const GamePhase = Object.freeze({
+    PLAYING: 0,
+    GAMEOVER: 1,
+    LEVELCLEAR: 2
 });
