@@ -46,7 +46,7 @@ function handlePlayer(deltaTime) {
                 toyPathIndex = 0;
             }
         }
-        if (breath <= 0) { breath = 0; blackout(); }
+        if (breath <= 0) { breath = 0; triggerLevelOver("Out of breath!"); }
     } else {
         bHoldTime = 0; // Reset when released, or on cooldown.
 
@@ -111,7 +111,7 @@ function updateToy(deltaTime) {
         }
         if (bridgeActive) {
             deactivateBridge();
-            if (!isWalkable(player.posX, player.posY)) blackout();
+            if (!isWalkable(player.posX, player.posY)) triggerLevelOver("You can't swim!");;
         }
         return;
     }

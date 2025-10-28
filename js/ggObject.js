@@ -163,6 +163,9 @@ const BreathMode = Object.freeze({
 
 const GamePhase = Object.freeze({
     PLAYING: 0,
-    GAMEOVER: 1,
-    LEVELCLEAR: 2
+    LEVELOVER: 1,
+    GAMECLEAR: 2,
+    FADING: 3,
+    PAUSED: 4,
+    CREDITS: 5
 });

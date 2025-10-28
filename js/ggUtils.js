@@ -149,13 +149,13 @@ function loadMap(i) {
 function goToNextMap() {
     const next = currentMapIndex + 1;
     if (next < mapArray.length) {
+        //gamePhase = GamePhase.FADING;     // optional
         fadeNextIndex = next;
         fadeDir = 1;        // start fade-out; load happens at peak black
     } else {
         // end-of-demo behavior (optional): fade out and reload 0
-        //fadeNextIndex = 0; fadeDir = 1;
-        //fade = 1;
-        //gamePhase = GamePhase.GAMEOVER;
+        fadeOnBlackCallback = () => startCredits();
+        fadeDir = 1;
     }
 }
 
@@ -181,4 +181,104 @@ function resetLevel() {
     loadMap(currentMapIndex);
     gamePhase = GamePhase.PLAYING;
     gameOverReason = "";
+}
+
+function addMessage(text, seconds = 2.5, color = "#ffd54a") {
+    messages.push({ text, t: seconds, color });
+}
+
+function updateMessages(dt) {
+    for (const m of messages) m.t -= dt;
+    for (let i = messages.length - 1; i >= 0; i--) if (messages[i].t <= 0) messages.splice(i, 1);
+}
+
+function drawMessages(ctx) {
+    if (!messages.length) return;
+    let x = 16, y = 16;
+    ctx.save();
+    ctx.textBaseline = "top";
+    ctx.font = "20px Arial";
+    for (const m of messages) {
+        const pad = 6, w = ctx.measureText(m.text).width + pad*2, h = 24 + pad*2;
+        ctx.fillStyle = "rgba(0,0,0,0.6)";
+        ctx.fillRect(x-4, y-4, w+8, h+8);
+        ctx.fillStyle = m.color;
+        ctx.fillText(m.text, x + pad, y + pad);
+        y += h + 6;
+    }
+    ctx.restore();
+}
+
+// ---- Fade draw (put near your other rendering helpers) ----
+function drawFade(ctx, w, h) {
+    if (fade <= 0) return;
+    ctx.save();
+    ctx.fillStyle = `rgba(0,0,0,${fade})`;
+    ctx.fillRect(0, 0, w, h);
+    ctx.restore();
+}
+
+// ---- Level Over trigger (message + fade→reset→fade in) ----
+function triggerLevelOver(reason = "Level Over") {
+    if (gamePhase === GamePhase.FADING || gamePhase === GamePhase.LEVELOVER) return;
+
+    gamePhase = GamePhase.LEVELOVER;
+    addMessage(reason, 2.5, "#ffb3b3");   // shows across the reset
+
+    // Use your existing fade system: head to black, reset while black, then fade in.
+    fadeDir = 1;
+    const onFullBlack = () => {
+        // Your instant reset lives in blackout(); call it here:
+        blackout();
+        // Head back in
+        fadeDir = -1;
+    };
+
+    // Hook the "when fully black" behavior into your doEverything fade step (below).
+    fadeOnBlackCallback = onFullBlack;    // (define this global var; see next snippet)
+}
+
+function startCredits() {
+    creditY = gameBoard.height + 40; // start below screen
+    gamePhase = GamePhase.CREDITS;
+    fade = 1;        // start fully black
+    fadeDir = -1;    // fade in to credits
+}
+
+function updateCredits(dt) {
+    creditY -= creditSpeed * dt;
+    if (creditY < -credits.length * 32) {
+        // end of scroll, wrap or stop
+        creditY = -credits.length * 32;
+    }
+}
+
+function drawCredits(ctx) {
+    ctx.save();
+    ctx.fillStyle = "#000";
+    ctx.fillRect(0, 0, gameBoard.width, gameBoard.height);
+    ctx.fillStyle = "#ffd54a";
+    ctx.font = "24px Courier New, monospace";
+    ctx.textAlign = "center";
+    let y = creditY;
+    for (let i = 0; i < credits.length; i++) {
+        ctx.fillText(credits[i], gameBoard.width / 2, y);
+        y += 32;
+    }
+    ctx.restore();
+}
+
+function updateControls() {
+    const maxSpread = Math.ceil(fbPages.length / 2) - 1; // 8 pages → 3
+    const atCover   = fbIndex === -1;
+    const atEnd     = fbIndex >= maxSpread;
+
+    const btnPrev = document.getElementById('fbPrev');
+    const btnNext = document.getElementById('fbNext');
+
+    btnPrev.disabled = atCover;
+    btnNext.disabled = atEnd;
+
+    btnPrev.setAttribute('aria-disabled', String(atCover));
+    btnNext.setAttribute('aria-disabled', String(atEnd));
 }

@@ -51,3 +51,11 @@
 - Added the code to test for the Manhattan Distance of the starting and ending tile for the Patrol Toy. If it is 1, then the path loops continuously; if not, the path just reverses.
 - Added the other 8 levels to the game, mapping them to the Difficulty Saw.
 - Corrected some errors with NPCs on the map arrays.
+
+# October 26 & 27, 2025
+- Added and Enum for the Game State itself.
+- Created a scrolling Credits screen.
+
+# October 28, 2025
+- Finished crafting the Instruction Manual.
+- Gave manual a touch up to be big enough to read, but not overwhelmingly big under the game's canvas.

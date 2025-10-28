@@ -36,6 +36,30 @@
 
             </div>
             <div id="caps"><canvas id="gameBoard" width="640" height="512"></canvas></div>
+            <section id="manual">
+                <div id="booklet-chooser" role="tablist" aria-label="Choose booklet">
+                    <button data-k="boy"  class="pill" role="tab" aria-selected="false">Boy</button>
+                    <button data-k="girl" class="pill" role="tab" aria-selected="false">Girl</button>
+                    <button data-k="and"  class="pill" role="tab" aria-selected="false">Androgynous</button>
+                </div>
+
+                <div id="flipbook">
+                    <div class="fb-toolbar">
+                        <button id="fbPrev" aria-label="Previous pages">⟨</button>
+                        <span id="fbLabel">Cover</span>
+                        <button id="fbNext" aria-label="Next pages">⟩</button>
+                    </div>
+
+                    <div class="fb-viewport">
+                        <div class="spread" id="fbSpread">
+                            <!-- JS injects <img class="page left"> and <img class="page right"> here -->
+                        </div>
+                        <!-- click zones -->
+                        <button class="hotzone left"  aria-label="Previous"></button>
+                        <button class="hotzone right" aria-label="Next"></button>
+                    </div>
+                </div>
+            </section>
         </div>
         <script language="JavaScript" src="js/ggMaps.js"></script>
         <script language="JavaScript" src="js/ggObject.js"></script>
